@@ -1,0 +1,211 @@
+# IMPORTING LIBRARIES
+
+import pymongo as pyM
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+# CREATING AND FEEDING THE DATABASE IN MONGODB
+
+    # DATABASE FEED MECHANISM
+
+client = pyM.MongoClient("localhost", 27017)
+
+db = client.fuel_data
+
+def add_data(year, country, population, prod, cons, prod_pc, cons_pc, component):
+
+    informations = {
+        "year":year,
+        "country": country,
+        "population": population,
+        "production": prod,
+        "consumption": cons,
+        "production per capita": prod_pc,
+        "consumption per capta": cons_pc,
+        }
+
+    if component == 'gas':
+        collection = db.gas_data
+        collection.insert_one(informations)
+    
+    elif component == 'coal':
+        collection = db.coal_data
+        collection.insert_one(informations)
+        
+    else:
+        collection = db.oil_data
+        collection.insert_one(informations)
+
+
+    # READING CSV FILE
+
+x = pd.read_csv(r'C:\Users\carlo\Desktop\PYTHON\DATASETS\FUEL PRODUCTION AND CONSUMPTION\fuel_production_vs_consumption.csv')
+data = pd.DataFrame(x)
+
+
+    # ENTERING INFORMATION: NATURAL GAS
+
+for i in range(len(data['Entity'])):
+    Year, Country, Population = int(data['Year'][i]), data['Entity'][i], data['Population'][i]
+    Gprod, Gcons = data['Gas production'][i], data['Gas consumption'][i]
+    Gprod_pc, Gcons_pc = data['Gas production per capita'][i], data['Gas consumption per capita'][i]
+    add_data(Year, Country, Population, Gprod, Gcons, Gprod_pc, Gcons_pc, 'gas')
+
+
+    # ENTERING INFORMATION: COAL
+
+for j in range(len(data['Entity'])):
+    Year, Country, population = int(data['Year'][j]), data['Entity'][j], data['Population'][j]
+    Cprod, Ccons = data['Coal production'][j], data['Coal consumption'][j]
+    Cprod_pc, Ccons_pc = data['Coal production per capita'][j], data['Coal consumption per capita'][j]
+    add_data(Year, Country, Population, Cprod, Ccons, Cprod_pc, Ccons_pc, 'coal')
+
+
+    # ENTERING INFORMATION: OIL
+
+for k in range(len(data['Entity'])):
+    Year, Country, population = int(data['Year'][k]), data['Entity'][k], data['Population'][k]
+    Oprod, Ocons = data['Oil production'][k], data['Oil consumption'][k]
+    Oprod_pc, Ocons_pc = data['Oil production per capita'][k], data['Oil consumption per capita'][k]
+    add_data(Year, Country, Population, Oprod, Ocons, Oprod_pc, Ocons_pc, 'oil')
+
+
+# STATISTICAL ANALYSIS
+
+    # 10 COUNTRIES WITH THE BIGGEST PRODUCTIONS OF NATURAL GAS IN 2018
+
+X1 = []
+Y1 = []
+
+for element in db.gas_data.find({'year':2018}).sort("production", pyM.DESCENDING):
+    X1.append(element['country'])
+    Y1.append(element['production'])
+
+X1 = X1[0:10]
+Y1 = Y1[0:10]
+
+revX1 = list(reversed(X1))
+revY1 = list(reversed(Y1))
+
+plt.barh(revX1,revY1, color = 'Magenta')
+plt.xlabel("Production (cubic meter)")
+plt.ylabel("Countries")
+plt.title("Natural Gas production")
+plt.show()
+    
+    
+    # 10 COUNTRIES WITH THE BIGGEST PRODUCTIONS OF COAL IN 2018
+
+X2 = []
+Y2 = []
+
+for element in db.coal_data.find({'year':2018}).sort("production", pyM.DESCENDING):
+    X2.append(element['country'])
+    Y2.append(element['production'])
+
+X2 = X2[0:10]
+Y2 = Y2[0:10]
+
+revX2 = list(reversed(X2))
+revY2 = list(reversed(Y2))
+
+plt.barh(revX2,revY2, color = 'gray')
+plt.xlabel("Production (cubic meter)")
+plt.ylabel("Countries")
+plt.title("Coal production")
+plt.show()
+
+
+    # 10 COUNTRIES WITH THE BIGGEST PRODUCTIONS OF OIL IN 2018
+
+X3 = []
+Y3 = []
+
+for element in db.oil_data.find({'year':2018}).sort("production", pyM.DESCENDING):
+    X3.append(element['country'])
+    Y3.append(element['production'])
+
+X3 = X3[0:10]
+Y3 = Y3[0:10]
+
+revX3 = list(reversed(X3))
+revY3 = list(reversed(Y3))
+
+plt.barh(revX3,revY3, color = 'Black')
+plt.xlabel("Production (cubic meter)")
+plt.ylabel("Countries")
+plt.title("Oil production")
+plt.show()
+
+
+    # ANALYSIS OF PRODUCTION AND CONSUMPTION OF NATURAL GAS IN BRAZIL BETWEEN 2010 AND 2018
+
+production_Brazil = []
+consumption_Brazil = []
+year_Brazil = []
+
+for element in db.gas_data.find({'country':'Brazil'}).sort("year", pyM.ASCENDING):
+    
+    year_int = (element['year'])
+    
+    if year_int >= 2010 and year_int <= 2018: 
+        production_Brazil.append(element['production'])
+        consumption_Brazil.append(element['consumption'])
+        year_Brazil.append(year_int)
+
+plt.plot(year_Brazil, production_Brazil, marker = 'o', linestyle='dashdot', label='Production', color = 'Green')
+plt.plot(year_Brazil, consumption_Brazil, marker = 'o', linestyle='dashdot', label='Consumption', color = 'Red')
+plt.legend()
+plt.title ("Gas production in Brazil (2010-2018)")
+plt.xlabel("Years")
+plt.ylabel("meter cubic of Gas")
+plt.show()
+
+
+    # COMPARISON OF NATURAL GAS PRODUCTION PER CAPITA BETWEEN BRAZIL, ARGENTINA, VENEZUELA AND BOLIVIA BETWEEN 2010 AND 2018
+
+production_pc_Brazil = []
+production_pc_Argentina = []
+production_pc_Venezuela = []
+production_pc_Bolivia = []
+year_America = []
+
+for element in db.gas_data.find({'country':'Brazil'}).sort("year", pyM.ASCENDING):
+    
+    year_int = (element['year'])
+    
+    if year_int >= 2010 and year_int <= 2018: 
+        production_pc_Brazil.append(element['production per capita'])
+        year_America.append(year_int)
+
+for element in db.gas_data.find({'country':'Argentina'}).sort("year", pyM.ASCENDING):
+    
+    year_int = (element['year'])
+    
+    if year_int >= 2010 and year_int <= 2018: 
+        production_pc_Argentina.append(element['production per capita'])
+
+for element in db.gas_data.find({'country':'Venezuela'}).sort("year", pyM.ASCENDING):
+    
+    year_int = (element['year'])
+    
+    if year_int >= 2010 and year_int <= 2018: 
+        production_pc_Venezuela.append(element['production per capita'])
+
+for element in db.gas_data.find({'country':'Bolivia'}).sort("year", pyM.ASCENDING):
+    
+    year_int = (element['year'])
+    
+    if year_int >= 2010 and year_int <= 2018: 
+        production_pc_Bolivia.append(element['production per capita'])
+
+plt.plot(year_America, production_pc_Brazil, marker = 'o', linestyle='dotted', label='Brazil', color = 'Green')
+plt.plot(year_America, production_pc_Argentina, marker = 'o', linestyle='dotted', label='Argentina', color = 'Blue')
+plt.plot(year_America, production_pc_Venezuela, marker = 'o', linestyle='dotted', label='Venezuela', color = 'Orange')
+plt.plot(year_America, production_pc_Bolivia, marker = 'o', linestyle='dotted', label='Bolivia', color = 'Red')
+plt.legend()
+plt.title ("Gas production per capita (2010-2018)")
+plt.xlabel("Years")
+plt.ylabel("meter cubic of Gas")
+plt.show()
