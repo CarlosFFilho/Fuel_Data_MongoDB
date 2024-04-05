@@ -26,14 +26,17 @@ def add_data(year, country, population, prod, cons, prod_pc, cons_pc, component)
         }
 
     if component == 'gas':
+
         collection = db.gas_data
         collection.insert_one(informations)
     
     elif component == 'coal':
+
         collection = db.coal_data
         collection.insert_one(informations)
         
     else:
+
         collection = db.oil_data
         collection.insert_one(informations)
 
@@ -41,12 +44,14 @@ def add_data(year, country, population, prod, cons, prod_pc, cons_pc, component)
     # READING CSV FILE
 
 x = pd.read_csv(r'C:\Users\carlo\Desktop\PYTHON\DATASETS\FUEL PRODUCTION AND CONSUMPTION\fuel_production_vs_consumption.csv')
+
 data = pd.DataFrame(x)
 
 
     # ENTERING INFORMATION: NATURAL GAS
 
 for i in range(len(data['Entity'])):
+
     Year, Country, Population = int(data['Year'][i]), data['Entity'][i], data['Population'][i]
     Gprod, Gcons = data['Gas production'][i], data['Gas consumption'][i]
     Gprod_pc, Gcons_pc = data['Gas production per capita'][i], data['Gas consumption per capita'][i]
@@ -56,6 +61,7 @@ for i in range(len(data['Entity'])):
     # ENTERING INFORMATION: COAL
 
 for j in range(len(data['Entity'])):
+    
     Year, Country, population = int(data['Year'][j]), data['Entity'][j], data['Population'][j]
     Cprod, Ccons = data['Coal production'][j], data['Coal consumption'][j]
     Cprod_pc, Ccons_pc = data['Coal production per capita'][j], data['Coal consumption per capita'][j]
@@ -65,6 +71,7 @@ for j in range(len(data['Entity'])):
     # ENTERING INFORMATION: OIL
 
 for k in range(len(data['Entity'])):
+    
     Year, Country, population = int(data['Year'][k]), data['Entity'][k], data['Population'][k]
     Oprod, Ocons = data['Oil production'][k], data['Oil consumption'][k]
     Oprod_pc, Ocons_pc = data['Oil production per capita'][k], data['Oil consumption per capita'][k]
@@ -79,6 +86,7 @@ X1 = []
 Y1 = []
 
 for element in db.gas_data.find({'year':2018}).sort("production", pyM.DESCENDING):
+
     X1.append(element['country'])
     Y1.append(element['production'])
 
@@ -101,6 +109,7 @@ X2 = []
 Y2 = []
 
 for element in db.coal_data.find({'year':2018}).sort("production", pyM.DESCENDING):
+    
     X2.append(element['country'])
     Y2.append(element['production'])
 
@@ -123,6 +132,7 @@ X3 = []
 Y3 = []
 
 for element in db.oil_data.find({'year':2018}).sort("production", pyM.DESCENDING):
+    
     X3.append(element['country'])
     Y3.append(element['production'])
 
@@ -150,6 +160,7 @@ for element in db.gas_data.find({'country':'Brazil'}).sort("year", pyM.ASCENDING
     year_int = (element['year'])
     
     if year_int >= 2010 and year_int <= 2018: 
+    
         production_Brazil.append(element['production'])
         consumption_Brazil.append(element['consumption'])
         year_Brazil.append(year_int)
@@ -176,6 +187,7 @@ for element in db.gas_data.find({'country':'Brazil'}).sort("year", pyM.ASCENDING
     year_int = (element['year'])
     
     if year_int >= 2010 and year_int <= 2018: 
+        
         production_pc_Brazil.append(element['production per capita'])
         year_America.append(year_int)
 
@@ -184,6 +196,7 @@ for element in db.gas_data.find({'country':'Argentina'}).sort("year", pyM.ASCEND
     year_int = (element['year'])
     
     if year_int >= 2010 and year_int <= 2018: 
+        
         production_pc_Argentina.append(element['production per capita'])
 
 for element in db.gas_data.find({'country':'Venezuela'}).sort("year", pyM.ASCENDING):
@@ -191,13 +204,15 @@ for element in db.gas_data.find({'country':'Venezuela'}).sort("year", pyM.ASCEND
     year_int = (element['year'])
     
     if year_int >= 2010 and year_int <= 2018: 
+
         production_pc_Venezuela.append(element['production per capita'])
 
 for element in db.gas_data.find({'country':'Bolivia'}).sort("year", pyM.ASCENDING):
     
     year_int = (element['year'])
     
-    if year_int >= 2010 and year_int <= 2018: 
+    if year_int >= 2010 and year_int <= 2018:
+
         production_pc_Bolivia.append(element['production per capita'])
 
 plt.plot(year_America, production_pc_Brazil, marker = 'o', linestyle='dotted', label='Brazil', color = 'Green')
