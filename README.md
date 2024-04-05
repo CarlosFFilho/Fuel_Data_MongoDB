@@ -1,6 +1,6 @@
 # Fuel_Data_MongoDB_Database
 
-Elaboration and feeding of a non-relational database in MongoDB, via Python language by the Pymongo library, containing information on production and consumption of natural gas, coal and oil (Data from Kaggle dataset). Furthermore, the following graphical analyzes were carried out:
+Elaboration and feeding of a non-relational database in MongoDB, via Python language by the Pymongo library, containing information on production and consumption of natural gas, coal and oil (dataset adapted from Kaggle). Furthermore, the following graphical analyzes were carried out:
 
 
 - Top 10 countries of coal production;
@@ -33,7 +33,8 @@ Elaboration and feeding of a non-relational database in MongoDB, via Python lang
   - Python;
   - Pandas;
   - Matplotlib;
-  - MongoDB.
+  - MongoDB;
+  - Kaggle dataset: Adapted from https://www.kaggle.com/datasets/shawkatsujon/worldwide-fuel-production-and-consumption.
 
 
 ## How to execute?
